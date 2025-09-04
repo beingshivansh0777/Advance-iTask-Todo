@@ -8,7 +8,13 @@ This app supports **Dark Mode**, **Drag & Drop**, **Subtasks**, **File Attachmen
 
 ## 🚀 Features
 
-### Login/SignUp Features
+## 🔑 Login/SignUp Features
+- Secure **Login & Signup** functionality for users  
+- Stores user credentials safely  
+- Validates input fields before submission  
+- Provides error messages for invalid details  
+- Easy to navigate UI for authentication  
+
 
 ### 🎨 UI/UX
 - **Dark/Light Mode** toggle for better user experience.
