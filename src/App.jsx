@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
-import Layout from "./components/Layout"; // 👈 Layout import
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react"; // ⬅ useUser import
+import Layout from "./components/Layout"; 
 import Header from "./components/Header";
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
@@ -14,6 +14,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { FaArrowLeft } from "react-icons/fa";
 
 const App = () => {
+  const { user } = useUser(); // ⬅ Current user
   const [darkMode, setDarkMode] = useState(false);
   const [todos, setTodos] = useState([]);
   const [completed, setCompleted] = useState([]);
@@ -29,20 +30,26 @@ const App = () => {
   const [historyDate, setHistoryDate] = useState("");
   const [historySort, setHistorySort] = useState("date-desc");
 
-  // LocalStorage Load
+  // ⬅ Dynamic Keys per User
+  const todosKey = user ? `todos_${user.id}` : "todos";
+  const completedKey = user ? `completed_${user.id}` : "completed";
+  const historyKey = user ? `history_${user.id}` : "history";
+
+  // LocalStorage Load (on user change)
   useEffect(() => {
-    const lsTodos = localStorage.getItem("todos");
-    const lsCompleted = localStorage.getItem("completed");
-    const lsHistory = localStorage.getItem("history");
-    if (lsTodos) setTodos(JSON.parse(lsTodos));
-    if (lsCompleted) setCompleted(JSON.parse(lsCompleted));
-    if (lsHistory) setHistory(JSON.parse(lsHistory));
-  }, []);
+    if (!user) return;
+    const lsTodos = localStorage.getItem(todosKey);
+    const lsCompleted = localStorage.getItem(completedKey);
+    const lsHistory = localStorage.getItem(historyKey);
+    setTodos(lsTodos ? JSON.parse(lsTodos) : []);
+    setCompleted(lsCompleted ? JSON.parse(lsCompleted) : []);
+    setHistory(lsHistory ? JSON.parse(lsHistory) : []);
+  }, [user]); // ⬅ run when user changes
 
   // LocalStorage Save Helpers
-  const saveTodos = (list) => localStorage.setItem("todos", JSON.stringify(list));
-  const saveCompleted = (list) => localStorage.setItem("completed", JSON.stringify(list));
-  const saveHistory = (list) => localStorage.setItem("history", JSON.stringify(list));
+  const saveTodos = (list) => localStorage.setItem(todosKey, JSON.stringify(list));
+  const saveCompleted = (list) => localStorage.setItem(completedKey, JSON.stringify(list));
+  const saveHistory = (list) => localStorage.setItem(historyKey, JSON.stringify(list));
 
   // Add Todo
   const handleAdd = () => {
